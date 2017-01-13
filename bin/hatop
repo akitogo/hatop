@@ -56,6 +56,8 @@ Some common administrative actions have hotkeys:
 
 Hotkey      Action
 
+F3          Drain connections from server
+
 F4          Restore initial server weight
 
 F5          Decrease server weight:     - 10
@@ -1162,7 +1164,7 @@ class Screen:
                 self.addstr(ypos, 1, 'HOTKEYS:',
                         curses.A_BOLD | curses.A_REVERSE)
                 self.addstr(ypos, 11,
-                        'F4=W-RESET  '
+                        'F3=DRAIN  F4=W-RESET  '
                         'F5=W-10  F6=W-1  F7=W+1  F8=W+10  '
                         'F9=ENABLE  F10=DISABLE',
                         curses.A_NORMAL | curses.A_REVERSE)
@@ -1858,6 +1860,7 @@ def mainloop(screen, interval):
         # Toggle hotkey footer
         if screen.hotkeys:
             if c not in (
+                    curses.KEY_F3,          # drain connections from server
                     curses.KEY_F4,          # reset weight
                     curses.KEY_F5,          # weight -10
                     curses.KEY_F6,          # weight -1
@@ -1958,6 +1961,7 @@ def mainloop(screen, interval):
                     curses.KEY_ENTER,       # show hotkeys
                     chr(curses.ascii.CR),   # show hotkeys
                     chr(curses.ascii.SP),   # copy & paste identifier
+                    curses.KEY_F3,          # drain connections from server
                     curses.KEY_F4,          # reset weight
                     curses.KEY_F5,          # weight -10
                     curses.KEY_F6,          # weight -1
@@ -1995,6 +1999,10 @@ def mainloop(screen, interval):
                         screen.switch_mode(5)
                         update_display = True
                         continue
+                elif c == curses.KEY_F3:
+                    screen.cli.execute_cmdline(
+                            'set server %s/%s state drain' % (pxname, svname))
+                    notify = True
                 elif c == curses.KEY_F4:
                     screen.cli.execute_cmdline(
                             'set weight %s/%s 100%%' % (pxname, svname))
