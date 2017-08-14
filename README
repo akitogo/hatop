@@ -256,3 +256,10 @@ Health check status reference
   L7RSP       layer 7 invalid response - protocol error
   L7STS       layer 7 response error, for example HTTP 5xx
 
+
+Socket forwarding
+=================
+If you want to run `hatop` locally but connect to a rmote socket you can do that by using `socat` and `ssh`.:  
+
+  $ socat unix-listen:/tmp/haproxy.sock,fork EXEC:"ssh server socat - unix-connect:/var/run/haproxy.sock" &
+  $ hatop -s /tmp/haproxy.sock
